@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import api from "../services/api";
-import "../style/cidade.css"
+import supabase from "../services/supabase";
+import "../style/cidade.css";
 
 export default function Cidades() {
   const [cidades, setCidades] = useState([]);
@@ -17,85 +17,93 @@ export default function Cidades() {
     carregarCidades();
   }, []);
 
-  const carregarCidades = async () => {
+  async function carregarCidades() {
     setLoading(true);
-    try {
-      const response = await api.get("/cidades");
-      setCidades(response.data);
-    } catch (error) {
-      console.error("Erro ao buscar cidades:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const cadastrar = async () => {
+    const { data, error } = await supabase.from("cidades").select("*");
+
+    if (error) {
+      console.error("Erro ao buscar cidades:", error);
+      setLoading(false);
+      return;
+    }
+
+    setCidades(data || []);
+    setLoading(false);
+  }
+
+  async function cadastrar() {
     if (!pais || !estado || !nome || !cep) {
       return alert("Preencha todos os campos!");
     }
 
-    try {
-      await api.post("/cidades", {
-        pais,
-        estado,
-        nome,
-        cep,
-      });
+    const { error } = await supabase
+      .from("cidades")
+      .insert([{ pais, estado, nome, cep }]);
 
-      limparCampos();
-      carregarCidades();
-    } catch (error) {
+    if (error) {
       console.error("Erro ao cadastrar cidade:", error);
+      return;
     }
-  };
 
-  const deletar = async (id) => {
+    limparCampos();
+    carregarCidades();
+  }
+
+  async function deletar(id) {
     const confirmar = window.confirm(
       "Tem certeza que deseja excluir esta cidade?",
     );
+
     if (!confirmar) return;
 
-    try {
-      await api.delete(`/cidades/${id}`);
-      carregarCidades();
-    } catch (error) {
-      console.error("Erro ao deletar cidade:", error);
-    }
-  };
+    const { error } = await supabase.from("cidades").delete().eq("id", id);
 
-  const iniciarEdicao = (cidade) => {
+    if (error) {
+      console.error("Erro ao deletar cidade:", error);
+      return;
+    }
+
+    carregarCidades();
+  }
+
+  function iniciarEdicao(cidade) {
     setEditandoId(cidade.id);
     setPais(cidade.pais);
     setEstado(cidade.estado);
     setNome(cidade.nome);
     setCep(cidade.cep);
-  };
+  }
 
-  const atualizar = async () => {
+  async function atualizar() {
     if (!editandoId) return;
 
-    try {
-      await api.put(`/cidades/${editandoId}`, {
+    const { error } = await supabase
+      .from("cidades")
+      .update({
         pais,
         estado,
         nome,
         cep,
-      });
+      })
+      .eq("id", editandoId);
 
-      limparCampos();
-      carregarCidades();
-    } catch (error) {
+    if (error) {
       console.error("Erro ao atualizar cidade:", error);
+      return;
     }
-  };
 
-  const limparCampos = () => {
+    limparCampos();
+    carregarCidades();
+  }
+
+  function limparCampos() {
     setPais("");
     setEstado("");
     setNome("");
     setCep("");
     setEditandoId(null);
-  };
+  }
 
   return (
     <div className="paginacidades">
@@ -132,14 +140,14 @@ export default function Cidades() {
 
         <div className="botoescidades">
           <button
-            onClick={editandoId ? atualizar : cadastrar}
             className="botaoatualizarcidades"
+            onClick={editandoId ? atualizar : cadastrar}
           >
             {editandoId ? "Atualizar" : "Cadastrar"}
           </button>
 
           {editandoId && (
-            <button onClick={limparCampos} className="botaocancelarcidades">
+            <button className="botaocancelarcidades" onClick={limparCampos}>
               Cancelar
             </button>
           )}

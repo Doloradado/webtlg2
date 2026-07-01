@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import api from "../services/api";
-import "../style/funcionario.css"
+import supabase from "../services/supabase";
+import "../style/funcionario.css";
 
 export default function Funcionarios() {
   const [funcionarios, setFuncionarios] = useState([]);
@@ -15,61 +15,84 @@ export default function Funcionarios() {
     carregarFuncionarios();
   }, []);
 
-  const carregarFuncionarios = async () => {
+  async function carregarFuncionarios() {
     setLoading(true);
-    try {
-      const response = await api.get("/funcionarios");
-      setFuncionarios(response.data);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const limparCampos = () => {
+    const { data, error } = await supabase.from("funcionarios").select("*");
+
+    if (error) {
+      console.error("Erro ao buscar funcionários:", error);
+      setLoading(false);
+      return;
+    }
+
+    setFuncionarios(data || []);
+    setLoading(false);
+  }
+
+  function limparCampos() {
     setNome("");
     setCargo("");
     setEditandoId(null);
-  };
+  }
 
-  const cadastrar = async () => {
+  async function cadastrar() {
     if (!nome || !cargo) {
       return alert("Preencha todos os campos!");
     }
 
-    await api.post("/funcionarios", {
-      nome,
-      cargo,
-    });
+    const { error } = await supabase
+      .from("funcionarios")
+      .insert([{ nome, cargo }]);
+
+    if (error) {
+      console.error("Erro ao cadastrar funcionário:", error);
+      return;
+    }
 
     limparCampos();
     carregarFuncionarios();
-  };
+  }
 
-  const deletar = async (id) => {
+  async function deletar(id) {
     const ok = window.confirm("Deseja excluir este funcionário?");
     if (!ok) return;
 
-    await api.delete(`/funcionarios/${id}`);
-    carregarFuncionarios();
-  };
+    const { error } = await supabase.from("funcionarios").delete().eq("id", id);
 
-  const iniciarEdicao = (f) => {
+    if (error) {
+      console.error("Erro ao deletar funcionário:", error);
+      return;
+    }
+
+    carregarFuncionarios();
+  }
+
+  function iniciarEdicao(f) {
     setEditandoId(f.id);
     setNome(f.nome);
     setCargo(f.cargo);
-  };
+  }
 
-  const atualizar = async () => {
+  async function atualizar() {
     if (!editandoId) return;
 
-    await api.put(`/funcionarios/${editandoId}`, {
-      nome,
-      cargo,
-    });
+    const { error } = await supabase
+      .from("funcionarios")
+      .update({
+        nome,
+        cargo,
+      })
+      .eq("id", editandoId);
+
+    if (error) {
+      console.error("Erro ao atualizar funcionário:", error);
+      return;
+    }
 
     limparCampos();
     carregarFuncionarios();
-  };
+  }
 
   return (
     <div className="paginafuncionarios">
@@ -94,21 +117,23 @@ export default function Funcionarios() {
 
         <div className="botoesfuncionarios">
           <button
-            onClick={editandoId ? atualizar : cadastrar}
             className="botaoatualizarfuncionarios"
+            onClick={editandoId ? atualizar : cadastrar}
           >
             {editandoId ? "Atualizar" : "Cadastrar"}
           </button>
 
           {editandoId && (
-            <button onClick={limparCampos} className="botaocancelarfuncionarios">
+            <button
+              className="botaocancelarfuncionarios"
+              onClick={limparCampos}
+            >
               Cancelar
             </button>
           )}
         </div>
       </div>
 
-      
       <div className="cardmostrarfuncionarios">
         <h3>Funcionários Cadastrados</h3>
 

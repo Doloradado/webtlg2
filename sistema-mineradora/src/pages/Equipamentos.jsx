@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import api from "../services/api";
-import "../style/equipamento.css"
+import supabase from "../services/supabase";
+import "../style/equipamento.css";
 
 export default function Equipamentos() {
   const [equipamentos, setEquipamentos] = useState([]);
@@ -18,73 +18,99 @@ export default function Equipamentos() {
     carregarEquipamentos();
   }, []);
 
-  const carregarEquipamentos = async () => {
+  async function carregarEquipamentos() {
     setLoading(true);
-    try {
-      const response = await api.get("/equipamentos");
-      setEquipamentos(response.data);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const limparCampos = () => {
+    const { data, error } = await supabase.from("equipamentos").select("*");
+
+    if (error) {
+      console.error("Erro ao buscar equipamentos:", error);
+      setLoading(false);
+      return;
+    }
+
+    setEquipamentos(data || []);
+    setLoading(false);
+  }
+
+  function limparCampos() {
     setNome("");
     setSetor("");
     setTipo("");
     setMarca("");
     setModelo("");
     setEditandoId(null);
-  };
+  }
 
-  const cadastrar = async () => {
+  async function cadastrar() {
     if (!nome || !setor || !tipo || !marca || !modelo) {
       return alert("Preencha todos os campos!");
     }
 
-    await api.post("/equipamentos", {
-      nome,
-      setor,
-      tipo,
-      marca,
-      modelo,
-    });
+    const { error } = await supabase.from("equipamentos").insert([
+      {
+        nome,
+        setor,
+        tipo,
+        marca,
+        modelo,
+      },
+    ]);
+
+    if (error) {
+      console.error("Erro ao cadastrar equipamento:", error);
+      return;
+    }
 
     limparCampos();
     carregarEquipamentos();
-  };
+  }
 
-  const deletar = async (id) => {
+  async function deletar(id) {
     const ok = window.confirm("Deseja excluir este equipamento?");
     if (!ok) return;
 
-    await api.delete(`/equipamentos/${id}`);
-    carregarEquipamentos();
-  };
+    const { error } = await supabase.from("equipamentos").delete().eq("id", id);
 
-  const iniciarEdicao = (e) => {
+    if (error) {
+      console.error("Erro ao deletar equipamento:", error);
+      return;
+    }
+
+    carregarEquipamentos();
+  }
+
+  function iniciarEdicao(e) {
     setEditandoId(e.id);
     setNome(e.nome);
     setSetor(e.setor);
     setTipo(e.tipo);
     setMarca(e.marca);
     setModelo(e.modelo);
-  };
+  }
 
-  const atualizar = async () => {
+  async function atualizar() {
     if (!editandoId) return;
 
-    await api.put(`/equipamentos/${editandoId}`, {
-      nome,
-      setor,
-      tipo,
-      marca,
-      modelo,
-    });
+    const { error } = await supabase
+      .from("equipamentos")
+      .update({
+        nome,
+        setor,
+        tipo,
+        marca,
+        modelo,
+      })
+      .eq("id", editandoId);
+
+    if (error) {
+      console.error("Erro ao atualizar equipamento:", error);
+      return;
+    }
 
     limparCampos();
     carregarEquipamentos();
-  };
+  }
 
   return (
     <div className="paginaequipamentos">
@@ -127,14 +153,17 @@ export default function Equipamentos() {
 
         <div className="botoesequipamentos">
           <button
-            onClick={editandoId ? atualizar : cadastrar}
             className="botaoatualizarequipamentos"
+            onClick={editandoId ? atualizar : cadastrar}
           >
             {editandoId ? "Atualizar" : "Cadastrar"}
           </button>
 
           {editandoId && (
-            <button onClick={limparCampos} className="botaocancelarequipamentos">
+            <button
+              className="botaocancelarequipamentos"
+              onClick={limparCampos}
+            >
               Cancelar
             </button>
           )}

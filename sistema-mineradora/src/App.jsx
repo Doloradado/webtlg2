@@ -6,7 +6,6 @@ import Cidades from "./pages/Cidades";
 import Funcionarios from "./pages/Funcionarios";
 import Servicos from "./pages/Servicos";
 import './style/App.css'
-
 function App() {
   const [pagina, setPagina] = useState("inicio");
 
@@ -19,6 +18,7 @@ function App() {
       {pagina === "equipamentos" && <Equipamentos />}
       {pagina === "funcionarios" && <Funcionarios />}
       {pagina === "servicos" && <Servicos />}
+      
     </div>
   );
 }

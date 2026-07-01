@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import api from "../services/api";
-import "../style/servicos.css"
+import supabase from "../services/supabase";
+import "../style/servicos.css";
 
 export default function Servicos() {
   const [servicos, setServicos] = useState([]);
@@ -17,69 +17,95 @@ export default function Servicos() {
     carregarServicos();
   }, []);
 
-  const carregarServicos = async () => {
+  async function carregarServicos() {
     setLoading(true);
-    try {
-      const response = await api.get("/servicos");
-      setServicos(response.data);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const limparCampos = () => {
+    const { data, error } = await supabase.from("servicos").select("*");
+
+    if (error) {
+      console.error("Erro ao buscar serviços:", error);
+      setLoading(false);
+      return;
+    }
+
+    setServicos(data || []);
+    setLoading(false);
+  }
+
+  function limparCampos() {
     setNome("");
     setDescricao("");
     setStatus("");
     setDataServico("");
     setEditandoId(null);
-  };
+  }
 
-  const cadastrar = async () => {
+  async function cadastrar() {
     if (!nome || !descricao || !status || !dataServico) {
       return alert("Preencha todos os campos!");
     }
 
-    await api.post("/servicos", {
-      nome,
-      descricao,
-      status,
-      data_servico: dataServico,
-    });
+    const { error } = await supabase.from("servicos").insert([
+      {
+        nome,
+        descricao,
+        status,
+        data_servico: dataServico,
+      },
+    ]);
+
+    if (error) {
+      console.error("Erro ao cadastrar serviço:", error);
+      return;
+    }
 
     limparCampos();
     carregarServicos();
-  };
+  }
 
-  const deletar = async (id) => {
+  async function deletar(id) {
     const ok = window.confirm("Deseja excluir este serviço?");
     if (!ok) return;
 
-    await api.delete(`/servicos/${id}`);
-    carregarServicos();
-  };
+    const { error } = await supabase.from("servicos").delete().eq("id", id);
 
-  const iniciarEdicao = (s) => {
+    if (error) {
+      console.error("Erro ao deletar serviço:", error);
+      return;
+    }
+
+    carregarServicos();
+  }
+
+  function iniciarEdicao(s) {
     setEditandoId(s.id);
     setNome(s.nome);
     setDescricao(s.descricao);
     setStatus(s.status);
     setDataServico(s.data_servico);
-  };
+  }
 
-  const atualizar = async () => {
+  async function atualizar() {
     if (!editandoId) return;
 
-    await api.put(`/servicos/${editandoId}`, {
-      nome,
-      descricao,
-      status,
-      data_servico: dataServico,
-    });
+    const { error } = await supabase
+      .from("servicos")
+      .update({
+        nome,
+        descricao,
+        status,
+        data_servico: dataServico,
+      })
+      .eq("id", editandoId);
+
+    if (error) {
+      console.error("Erro ao atualizar serviço:", error);
+      return;
+    }
 
     limparCampos();
     carregarServicos();
-  };
+  }
 
   return (
     <div className="paginaservicos">
@@ -116,14 +142,14 @@ export default function Servicos() {
 
         <div className="botoesservicos">
           <button
-            onClick={editandoId ? atualizar : cadastrar}
             className="botaoatualizarservicos"
+            onClick={editandoId ? atualizar : cadastrar}
           >
             {editandoId ? "Atualizar" : "Cadastrar"}
           </button>
 
           {editandoId && (
-            <button onClick={limparCampos} className="botaocancelarservicos">
+            <button className="botaocancelarservicos" onClick={limparCampos}>
               Cancelar
             </button>
           )}
