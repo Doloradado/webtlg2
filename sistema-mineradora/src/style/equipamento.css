@@ -1,0 +1,145 @@
+.paginaequipamentos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 30px;
+}
+
+.paginaequipamentos h2 {
+  margin-bottom: 20px;
+  color: #000000;
+}
+
+.divequipamentos {
+  width: 100%;
+  max-width: 700px;
+  background-color: rgb(134, 59, 25);
+  border: 0;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.divequipamentos h3 {
+  margin-bottom: 15px;
+  color: #000000;
+  font-weight: bolder;
+}
+
+.cardequipamentos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.cardequipamentos input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+}
+
+.cardequipamentos input:focus {
+  border-color: #999;
+}
+
+.botoesequipamentos {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  justify-self: right;
+}
+
+.botaoatualizarequipamentos {
+  padding: 10px 16px;
+  border: none;
+  background-color: rgb(214, 100, 39);
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.botaoatualizarequipamentos:hover {
+  background-color: rgb(255, 137, 74);
+}
+
+.botaocancelarequipamentos {
+  padding: 10px 16px;
+  border: none;
+  background-color: rgb(255, 0, 0);
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.botaocancelarequipamentos:hover {
+  background-color: rgb(255, 112,112);
+}
+
+.cardmostrarequipamentos {
+  width: 100%;
+  max-width: 900px;
+  background-color: rgb(134, 59, 25);
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.cardmostrarequipamentos h3 {
+  margin-bottom: 15px;
+}
+
+.tabelaequipamentos {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabelaequipamentos th,
+.tabelaequipamentos td {
+  border: 1px solid #000000;
+  padding: 10px;
+  text-align: center;
+}
+
+.tabelaequipamentos th {
+  background-color: rgb(188, 116, 83);
+  color: black;
+  font-weight: bold;
+  font-weight: 600;
+}
+.tabelaequipamentos td {
+  background-color: rgb(253, 193, 165);
+  color: black;
+  font-weight: lighter;
+  font-weight: 600;
+}
+
+.botaoeditarequipamentos {
+  padding: 6px 10px;
+  margin-right: 5px;
+  border: none;
+  background-color: rgb(77, 77, 77);
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.botaoeditarequipamentos:hover {
+  background-color: rgb(118, 118, 118);
+}
+
+.botaodeletarequipamentos {
+  padding: 6px 10px;
+  border: none;
+  background-color: rgb(255, 57, 57);
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.botaodeletarequipamentos:hover {
+  background-color: #cb4b46;
+}

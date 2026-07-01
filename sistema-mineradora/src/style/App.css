@@ -1,0 +1,105 @@
+#navmenu {
+  width: 100%;
+  display: flexbox;
+  background-color: rgb(139, 59, 25);
+  color: rgb(255, 255, 255);
+  justify-content: space-between;
+  align-items: center;
+}
+#navmenu h1 {
+  margin-left: 5px;
+}
+
+#navmenu button {
+  background-color: rgb(202, 110, 60);
+  color:rgb(0, 0, 0);
+  border: 0;
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  margin-left: 5px;
+  padding: 5px;
+  font-weight: bold;
+  font-size: larger;
+  cursor: pointer;
+}
+
+#navmenu button:hover {
+  background-color: #d1a875;
+}
+
+#divchefeinicio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+#divinicio {
+  text-align: center;
+  margin-bottom: 30px;
+  max-width: 800px;
+}
+
+#divinicio h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: black;
+}
+
+#divinicio h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: black;
+}
+
+.gridcards {
+  display: grid;
+  grid-template-columns: repeat(2, 240px);
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.cardinicioh3 {
+  grid-column: span 2;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background-color:rgb(134, 59, 25);
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: rgb(255, 255, 255);
+}
+
+.cardinicio {
+  width: 240px;
+  height: 140px;
+  background-color: rgb(134, 59, 25);
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.cardinicio:hover {
+  transform: translateY(-4px);
+}
+
+.cardinicio h3 {
+  margin-bottom: 8px;
+  color:rgb(255, 255, 255);
+}
+
+.cardinicio p {
+  font-size: 0.9rem;
+  color: rgb(255, 255, 255);
+}
